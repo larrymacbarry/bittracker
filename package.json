@@ -1,0 +1,19 @@
+{
+  "name": "bittracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/larrymacbarry/bittracker.git"
+  },
+  "author": "larrymacbarry",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/larrymacbarry/bittracker/issues"
+  },
+  "homepage": "https://github.com/larrymacbarry/bittracker#readme"
+}
