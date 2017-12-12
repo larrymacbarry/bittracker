@@ -1,0 +1,30 @@
+@import "~vue-material/dist/theme/engine";
+
+@include md-register-theme("default", (
+        primary: md-get-palette-color(purple, A200), // The primary color of your application
+        accent: md-get-palette-color(purple, A200) // The accent or secondary color
+));
+
+@import "~vue-material/dist/theme/all"; // Apply the theme
+
+
+
+body {
+  position: relative;
+  height: 100%;
+}
+
+.md-drawer {
+  width: 230px;
+  max-width: calc(100vw - 125px);
+}
+
+.md-app {
+  width: 100%;
+}
+
+div#app {
+  height: 100%;
+  position: relative;
+  display: flex;
+}
