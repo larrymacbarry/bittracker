@@ -5,26 +5,42 @@ import 'vue-material/dist/theme/default.css';
 
 Vue.use(VueMaterial);
 
-new Vue({
+let currencies = {},
+    pageTitle = "Main";
+
+let app = new Vue({
     el: '#app',
     name: 'Reveal',
     data: {
         menuVisible: false,
-        message: "app"
+        pageTitle: pageTitle,
+        currencies: currencies
     }
 });
 
-let arr = [
-    [
-        "banana", "orange", "pineapple"
-    ],
-     [
-        "potato", "tomato", "cucumber"
-    ]
-];
+function loadCurrencies () {
 
-let newArr = arr.map(function callback(c, i, arr) {
-    return c.join() + " is tasty";
-});
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR', true);
+    xhr.send();
 
-console.log(newArr);
+    xhr.onreadystatechange = function() { // (3)
+        if (xhr.readyState != 4) return;
+
+        if (xhr.status != 200) {
+            console.log(xhr.status + ': ' + xhr.statusText);
+        } else {
+            app.currencies = JSON.parse(xhr.response);
+        }
+    };
+}
+
+setInterval(function(){
+    loadCurrencies ();
+}, 500);
+
+
+
+
+
+

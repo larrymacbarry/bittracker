@@ -16,7 +16,7 @@
                     <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
                         <md-icon>menu</md-icon>
                     </md-button>
-                    <span class="md-title">{{message}}</span>
+                    <span class="md-title">{{pageTitle}}</span>
                 </md-app-toolbar>
 
                 <md-app-drawer :md-active.sync="menuVisible">
@@ -46,7 +46,13 @@
                 </md-app-drawer>
 
                 <md-app-content class="md-layout-item page-container">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
+                    <md-list>
+                        <md-list-item v-for="(value, key) in currencies">
+                            <h2 class="md-title">{{ key }}/USD:&nbsp;&nbsp;</h2>
+                            <span class="md-list-item-text"> {{ value }}</span>
+                            <md-divider></md-divider>
+                        </md-list-item>
+                    </md-list>
                 </md-app-content>
             </md-app>
     </template>
