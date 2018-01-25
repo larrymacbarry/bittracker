@@ -6,7 +6,11 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin"),
 
 module.exports = {
     entry: {
-        bundle: [path.resolve(__dirname, 'js/script.js'), path.resolve(__dirname, 'css/style.scss')]
+        bundle: [
+            path.resolve(__dirname, 'js/script.js'),
+            path.resolve(__dirname, 'css/style.scss'),
+            path.resolve(__dirname, 'default/config.json')
+        ]
     },
     output: {
         path: path.join(__dirname, "dist"),
@@ -20,6 +24,13 @@ module.exports = {
     },
     module: {
         loaders: [
+            {
+                test: /\.vue$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'vue-loader'
+                }
+            },
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,

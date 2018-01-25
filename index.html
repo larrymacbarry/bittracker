@@ -6,56 +6,11 @@
     <title>Bittracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="dist/bundle.css">
 </head>
 <body>
 <div id="app">
-    <template>
-            <md-app md-mode="reveal">
-                <md-app-toolbar class="md-primary">
-                    <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
-                        <md-icon>menu</md-icon>
-                    </md-button>
-                    <span class="md-title">{{pageTitle}}</span>
-                </md-app-toolbar>
-
-                <md-app-drawer :md-active.sync="menuVisible">
-                    <md-toolbar class="md-transparent" md-elevation="0">Navigation</md-toolbar>
-
-                    <md-list>
-                        <md-list-item>
-                            <md-icon>move_to_inbox</md-icon>
-                            <span class="md-list-item-text">Inbox</span>
-                        </md-list-item>
-
-                        <md-list-item>
-                            <md-icon>send</md-icon>
-                            <span class="md-list-item-text">Sent Mail</span>
-                        </md-list-item>
-
-                        <md-list-item>
-                            <md-icon>delete</md-icon>
-                            <span class="md-list-item-text">Trash</span>
-                        </md-list-item>
-
-                        <md-list-item>
-                            <md-icon>error</md-icon>
-                            <span class="md-list-item-text">Spam</span>
-                        </md-list-item>
-                    </md-list>
-                </md-app-drawer>
-
-                <md-app-content class="md-layout-item page-container">
-                    <md-list>
-                        <md-list-item v-for="(value, key) in currencies">
-                            <h2 class="md-title">{{ key }}/USD:&nbsp;&nbsp;</h2>
-                            <span class="md-list-item-text"> {{ value }}</span>
-                            <md-divider></md-divider>
-                        </md-list-item>
-                    </md-list>
-                </md-app-content>
-            </md-app>
-    </template>
 </div>
 <script src="dist/bundle.js"></script>
 </body>

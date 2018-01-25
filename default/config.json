@@ -1,0 +1,18 @@
+{
+  "request": {
+    "currencies": [
+      {
+        "fCurrency": "XRP",
+        "sCurrency": "USD"
+      },
+      {
+        "fCurrency": "BTC",
+        "sCurrency": "USD"
+      },
+      {
+        "fCurrency": "BTC",
+        "sCurrency": "XRP"
+      }
+    ]
+  }
+}
