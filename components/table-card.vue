@@ -1,6 +1,7 @@
 <template>
     <div>
-        <md-table v-model="data" md-sort="name" md-sort-order="asc" md-card>
+        <md-table v-model="arr" :md-sort.sync="currentSort" :md-sort-order.sync="currentSortOrder"
+                  :md-sort-fn="customSort" md-card>
             <md-table-toolbar>
                 <h1 class="md-title">Change</h1>
             </md-table-toolbar>
@@ -12,12 +13,14 @@
                 <md-table-cell md-label="Value" md-sort-by="value">{{ item.sSymbol }} {{ item.value }}</md-table-cell>
                 <md-table-cell md-label="Open" md-sort-by="open">{{ item.sSymbol }} {{ item.open }}</md-table-cell>
                 <template v-if="item.change >= 0">
-                    <md-table-cell md-label="Change" md-sort-by="change" class="green">{{ roundNumber(item.change, 4) }} ({{
+                    <md-table-cell md-label="Change" md-sort-by="change" class="green">{{ roundNumber(item.change, 4) }}
+                        ({{
                         (Math.sign(item.change)) * roundNumber(item.change / item.value, 2)}}%)
                     </md-table-cell>
                 </template>
                 <template v-else>
-                    <md-table-cell md-label="Change" md-sort-by="change" class="red">{{ roundNumber(item.change, 4) }} ({{
+                    <md-table-cell md-label="Change" md-sort-by="change" class="red">{{ roundNumber(item.change, 4) }}
+                        ({{
                         (Math.sign(item.change)) * roundNumber(item.change / item.value, 2)}}%)
                     </md-table-cell>
                 </template>
@@ -30,22 +33,62 @@
     export default {
         props: ['data'],
         name: 'TableCard',
+        data: () => ({
+            currentSort: 'id',
+            currentSortOrder: 'asc',
+            arr: []
+        }),
         methods: {
+
+            // round number
             roundNumber(num, scale) {
                 if (!("" + num).includes("e")) {
                     return +(Math.round(num + "e+" + scale) + "e-" + scale);
                 } else {
-                    var arr = ("" + num).split("e");
-                    var sig = ""
+                    let arr = ("" + num).split("e");
+                    let sig = "";
                     if (+arr[1] + scale > 0) {
                         sig = "+";
                     }
-                    var i = +arr[0] + "e" + sig + (+arr[1] + scale);
-                    var j = Math.round(i);
-                    var k = +(j + "e-" + scale);
+                    let i = +arr[0] + "e" + sig + (+arr[1] + scale);
+                    let j = Math.round(i);
+                    let k = +(j + "e-" + scale);
                     return k;
                 }
+            },
+            customSort(value) {
+                return value.sort((a, b) => {
+                    const sortBy = this.currentSort;
+
+                    if (this.currentSortOrder === 'desc') {
+                        return a[sortBy].localeCompare(b[sortBy])
+                    }
+
+                    return b[sortBy].localeCompare(a[sortBy])
+                })
+            },
+            console (inf) {
+                console.log(inf);
             }
+        },
+        watch: {
+            data: function (val) {
+                this.arr = JSON.parse(JSON.stringify(this.data));
+
+                // make sense if number of rows is >=2
+                if (this.arr.length > 1) {
+                    //this.customSort(this.arr);
+                    return this.arr.sort((a, b) => {
+                        let sortBy = this.currentSort;
+
+                        if (this.currentSortOrder === 'desc') {
+                            return a[sortBy].localeCompare(b[sortBy])
+                        }
+
+                        return b[sortBy].localeCompare(a[sortBy])
+                    })
+                }
+            },
         }
     }
 </script>

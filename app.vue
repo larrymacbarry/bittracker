@@ -21,7 +21,6 @@
             <md-list>
                 <a href="/">
                     <md-list-item>
-
                         <md-icon>home</md-icon>
                         <span class="md-list-item-text">Home</span>
                     </md-list-item>
@@ -37,7 +36,6 @@
 
                 <a href="/about/">
                     <md-list-item>
-
                         <md-icon>info</md-icon>
                         <span class="md-list-item-text">About</span>
                     </md-list-item>

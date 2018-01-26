@@ -4,7 +4,6 @@ import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import defaultData from '.././default/config.json';
 
-
 //main template
 import App from '.././app.vue';
 
@@ -36,7 +35,7 @@ setInterval(function () {
             .then(
                 (response) => {
                     let curData = {
-                        'id': i,
+                        'id': i.toString(),
                         'fCurrency': (c.fCurrency).toString(),
                         'sCurrency': (c.sCurrency).toString(),
                         'fSymbol': (JSON.parse(response)['DISPLAY'].FROMSYMBOL).toString(),
@@ -50,13 +49,15 @@ setInterval(function () {
                     if (!data[i]) {
                         data.push(curData);
                     } else {
-                        Vue.set(vm.data, i, curData);
+                        if (JSON.stringify(vm.data) !== JSON.stringify(curData)) {
+                            Vue.set(vm.data, i, curData);
+                        }
                     }
                 },
                 error => console.log(`Rejected: ${error}`)
             );
     });
-}, 1000);
+}, 200);
 
 function compareCurrencies(fC, sC) {
     return new Promise(function (resolve, reject) {
