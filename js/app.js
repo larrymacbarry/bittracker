@@ -1,26 +1,31 @@
 import Vue from 'vue';
 import VueMaterial from 'vue-material';
+import VueRouter from 'vue-router';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import defaultData from '.././default/config.json';
 
 //main template
 import App from '.././app.vue';
+import routes from '.././routes/routes';
+
+
+const router = new VueRouter({routes});
 
 Vue.use(VueMaterial);
+Vue.use(VueRouter);
 
 let data = [],
-    pageTitle = "Main",
     request = defaultData.request.currencies;
 
 
 let vm = new Vue({
+    router: router,
     el: '#app',
     components: {App},
-    template: '<App v-bind:data="data" v-bind:pageTitle="pageTitle"/>',
+    template: '<App v-bind:data="data"/>',
     data: {
         data: data,
-        pageTitle: pageTitle
     },
     methods: {
         toInteger: function (val) {
