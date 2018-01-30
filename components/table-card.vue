@@ -39,7 +39,6 @@
             arr: []
         }),
         methods: {
-
             // round number
             roundNumber(num, scale) {
                 if (!("" + num).includes("e")) {

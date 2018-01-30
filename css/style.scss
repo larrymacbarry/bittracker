@@ -1,11 +1,46 @@
 @import "~vue-material/dist/theme/engine";
 
 @include md-register-theme("default", (
+        primary: md-get-palette-color(indigo, A400), // The primary color of your application
+        accent: md-get-palette-color(indigo, A200) // The accent or secondary color
+))
+
+@include md-register-theme("yellow", (
+        primary: md-get-palette-color(yellow, A400), // The primary color of your application
+        accent: md-get-palette-color(yellow, A200) // The accent or secondary color
+))
+
+@include md-register-theme("indigo", (
+        primary: md-get-palette-color(indigo, A400), // The primary color of your application
+        accent: md-get-palette-color(indigo, A200) // The accent or secondary color
+))
+
+@include md-register-theme("green", (
+        primary: md-get-palette-color(green, A400), // The primary color of your application
+        accent: md-get-palette-color(green, A200) // The accent or secondary color
+))
+
+@include md-register-theme("red", (
         primary: md-get-palette-color(red, A400), // The primary color of your application
         accent: md-get-palette-color(red, A200) // The accent or secondary color
 ))
 
-//@import "~vue-material/dist/theme/all"; // Apply the theme
+@include md-register-theme("purple", (
+        primary: md-get-palette-color(purple, A400), // The primary color of your application
+        accent: md-get-palette-color(purple, A200) // The accent or secondary color
+))
+
+@include md-register-theme("black", (
+        primary: md-get-palette-color(black, A400), // The primary color of your application
+        accent: md-get-palette-color(black, A200) // The accent or secondary color
+))
+
+@include md-register-theme("white", (
+        primary: md-get-palette-color(white, A400), // The primary color of your application
+        accent: md-get-palette-color(white, A200) // The accent or secondary color
+))
+
+@import "~vue-material/dist/theme/all"; // Apply the theme
 
 body {
   position: relative;
@@ -19,6 +54,11 @@ body {
 
 .md-app {
   width: 100%;
+  height: 100%;
+}
+
+.md-content {
+  padding: 16px;
 }
 
 div#app {
