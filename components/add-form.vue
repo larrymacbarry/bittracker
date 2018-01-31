@@ -1,0 +1,79 @@
+<template>
+    <div>
+        <form novalidate class="md-layout" @submit.prevent="saveCurrency">
+            <md-content>
+                <div class="md-layout md-layout md-gutter">
+                    <div class="md-layout-item md-size-100">
+                        <md-field>
+                            <label for="from-currency">From currency</label>
+                            <md-select id="from-currency" v-model="form.fromCurrency" :disabled="sending">
+                                <template v-for="coin in coinList">
+                                    <md-option :value="coin">{{coin}}</md-option>
+                                </template>
+                            </md-select>
+                        </md-field>
+                    </div>
+                    <div class="md-layout-item md-gutter md-size-100">
+                        <md-field>
+                            <label for="to-currency">To currency</label>
+                            <md-select id="to-currency" v-model="form.toCurrency" :disabled="sending">
+                                <template v-for="coin in coinList">
+                                    <md-option :value="coin">{{coin}}</md-option>
+                                </template>
+                            </md-select>
+                        </md-field>
+                    </div>
+                    <div class="md-layout-item md-gutter md-size-100">
+                        <md-progress-bar md-mode="indeterminate" v-if="sending"/>
+
+                        <md-button type="submit" class="md-primary" :disabled="sending">Add currency change</md-button>
+                    </div>
+                </div>
+            </md-content>
+        </form>
+    </div>
+</template>
+
+<script>
+    import defaultData from '.././default/config.json';
+
+    let coinList = defaultData.coins;
+
+    export default {
+        name: 'FormValidation',
+        data: function () { return {
+            form: {
+                fromCurrency: defaultData.coins[0],
+                toCurrency: defaultData.coins[defaultData.coins.length - 1],
+            },
+            sending: false,
+            coinList: coinList,
+            newCurrency: this.request
+        }},
+        methods: {
+            saveCurrency() {
+                console.log(this.request);
+                this.sending = true;
+                this.newCurrency.push({
+                    "fCurrency": this.form.fromCurrency,
+                    "sCurrency": this.form.toCurrency
+                });
+                this.$emit('setCurrencies', this.newCurrency);
+                this.sending = false;
+                this.fromCurrency = defaultData.coins[0];
+                this.toCurrency = defaultData.coins[defaultData.coins.length - 1];
+
+            }
+        },
+        props: ['request']
+    }
+</script>
+
+<style lang="scss" scoped>
+    .md-progress-bar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+    }
+</style>

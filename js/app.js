@@ -4,11 +4,11 @@ import VueRouter from 'vue-router';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import defaultData from '.././default/config.json';
+import VueDargabble from 'vue-router';
 
 //main template
 import App from '.././app.vue';
 import routes from '.././routes/routes';
-
 
 const router = new VueRouter({routes});
 
@@ -16,53 +16,65 @@ Vue.use(VueMaterial);
 Vue.use(VueRouter);
 
 let data = [],
-    request = defaultData.request.currencies;
-
+    request = defaultData.request;
+if (localStorage.getItem("request")) {
+    request = JSON.parse(localStorage.getItem("request"));
+}
 
 let vm = new Vue({
     router: router,
     el: '#app',
     components: {App},
-    template: '<App v-bind:data="data"/>',
+    template: '<App v-bind:data="data"  v-bind:request="request" @setCurrencies="setCurrencies"/>',
     data: {
         data: data,
+        request: request
     },
     methods: {
         toInteger: function (val) {
             return parseInt(val, 10);
-        }
+        },
+        setCurrencies(val) {
+            localStorage.setItem("request", JSON.stringify(val)); // setting up currencies we want to show
+            this.request = val;
+
+        },
+
+    },
+    created: function () {
+        console.log(request);
+        setInterval(function () {
+            request.forEach((c, i) => {
+                compareCurrencies(c.fCurrency, c.sCurrency)
+                    .then(
+                        (response) => {
+                            let curData = {
+                                'id': i.toString(),
+                                'fCurrency': (c.fCurrency).toString(),
+                                'sCurrency': (c.sCurrency).toString(),
+                                'fSymbol': (JSON.parse(response)['DISPLAY'].FROMSYMBOL).toString(),
+                                'sSymbol': (JSON.parse(response)['DISPLAY'].TOSYMBOL).toString(),
+                                'value': (JSON.parse(response)['RAW'].PRICE).toString(),
+                                'open': (JSON.parse(response)['RAW'].OPEN24HOUR).toString(),
+                                'change': (JSON.parse(response)['RAW'].CHANGE24HOUR).toString(),
+                                'volume': (JSON.parse(response)['RAW'].VOLUME24HOUR).toString(),
+                            };
+
+                            if (!data[i]) {
+                                data.push(curData);
+                            } else {
+                                if (JSON.stringify(vm.data) !== JSON.stringify(curData)) {
+                                    Vue.set(vm.data, i, curData);
+                                }
+                            }
+                        },
+                        error => console.log(`Rejected: ${error}`)
+                    );
+            });
+        }, 200);
     }
 });
 
-setInterval(function () {
-    request.forEach((c, i) => {
-        compareCurrencies(c.fCurrency, c.sCurrency)
-            .then(
-                (response) => {
-                    let curData = {
-                        'id': i.toString(),
-                        'fCurrency': (c.fCurrency).toString(),
-                        'sCurrency': (c.sCurrency).toString(),
-                        'fSymbol': (JSON.parse(response)['DISPLAY'].FROMSYMBOL).toString(),
-                        'sSymbol': (JSON.parse(response)['DISPLAY'].TOSYMBOL).toString(),
-                        'value': (JSON.parse(response)['RAW'].PRICE).toString(),
-                        'open': (JSON.parse(response)['RAW'].OPEN24HOUR).toString(),
-                        'change': (JSON.parse(response)['RAW'].CHANGE24HOUR).toString(),
-                        'volume': (JSON.parse(response)['RAW'].VOLUME24HOUR).toString(),
-                    };
-
-                    if (!data[i]) {
-                        data.push(curData);
-                    } else {
-                        if (JSON.stringify(vm.data) !== JSON.stringify(curData)) {
-                            Vue.set(vm.data, i, curData);
-                        }
-                    }
-                },
-                error => console.log(`Rejected: ${error}`)
-            );
-    });
-}, 200);
 
 function compareCurrencies(fC, sC) {
     return new Promise(function (resolve, reject) {
@@ -83,10 +95,3 @@ function compareCurrencies(fC, sC) {
         xhr.send();
     });
 }
-
-
-
-
-
-
-

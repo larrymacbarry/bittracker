@@ -1,18 +1,21 @@
 {
-  "request": {
-    "currencies": [
-      {
-        "fCurrency": "XRP",
-        "sCurrency": "USD"
-      },
-      {
-        "fCurrency": "BTC",
-        "sCurrency": "USD"
-      },
-      {
-        "fCurrency": "BTC",
-        "sCurrency": "XRP"
-      }
-    ]
-  }
+  "request": [
+    {
+      "fCurrency": "BTC",
+      "sCurrency": "USD"
+    }
+  ],
+  "coins": [
+    "BTC",
+    "ETC",
+    "LTC",
+    "DASH",
+    "XMR",
+    "NXT",
+    "BTG",
+    "ETG",
+    "ETC",
+    "ZEC",
+    "USD"
+  ]
 }

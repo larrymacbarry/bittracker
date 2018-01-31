@@ -8,14 +8,6 @@ export default [
         component: Home,
         name: "Home",
         props: true,
-        beforeEnter: (to, from, next) => {
-            if (!to.params.visibility || ['all', 'active', 'completed'].includes(to.params.visibility)) {
-                next();
-            }
-            else {
-                next('/');
-            }
-        }
     },
     {
         path: "/settings",
