@@ -48,24 +48,23 @@
             },
             sending: false,
             coinList: coinList,
-            newCurrency: this.request
         }},
         methods: {
             saveCurrency() {
-                console.log(this.request);
                 this.sending = true;
-                this.newCurrency.push({
+                this.bus.$emit('onCloseModal');
+                this.bus.$emit('addCurrency', {
                     "fCurrency": this.form.fromCurrency,
                     "sCurrency": this.form.toCurrency
                 });
-                this.$emit('setCurrencies', this.newCurrency);
                 this.sending = false;
+
                 this.fromCurrency = defaultData.coins[0];
                 this.toCurrency = defaultData.coins[defaultData.coins.length - 1];
 
             }
         },
-        props: ['request']
+        props: ['request', 'bus']
     }
 </script>
 

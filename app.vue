@@ -37,18 +37,19 @@
             </md-list>
         </md-drawer>
 
-        <md-content class="md-layout-item page-container" v-bind:md-theme="themeColor">
+        <md-content class="md-layout-item page-container" :md-theme="themeColor">
 
-            <router-view v-bind:request="request" v-bind:data="data" @changeTheme="changeTheme" @setCurrencies="setCurrencies"></router-view>
+            <router-view :bus="bus" :request="request" :data="data" @changeTheme="changeTheme"></router-view>
 
         </md-content>
+
+        <slot></slot>
     </div>
 </template>
 
 <script>
     let themeColor = '';
     if (localStorage.getItem("theme")) themeColor = localStorage.getItem("theme");
-
 
     export default {
         name: 'App',
@@ -64,10 +65,6 @@
             },
             changeTheme(val) {
                 this.themeColor = val;
-            },
-            setCurrencies(val) {
-                console.log(this.request);
-                this.$emit('setCurrencies', val);
             }
         },
         computed: {
@@ -75,6 +72,6 @@
                 return this.$route.name
             }
         },
-        props: ['data', 'request'],
+        props: ['data', 'request', 'bus'],
     }
 </script>

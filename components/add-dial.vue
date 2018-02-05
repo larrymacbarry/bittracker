@@ -14,15 +14,17 @@
 
     export default {
         name: 'DialogCustom',
-        data: () => ({
-            showDialog: false
-        }),
-        props: ['dialTitle', 'addButton', 'closeModal'],
-        watch: {
-            closeModal: function () {
+        data: function () {
+            return {showDialog: false}
+        },
+        props: ['dialTitle', 'addButton', 'closeModal', 'bus'],
+        created: function () {
+            this.bus.$on('onCloseModal', () => {
+                console.log("close");
+                console.log(this);
                 this.showDialog = false;
-            }
-        }
+            })
+        },
     }
 </script>
 

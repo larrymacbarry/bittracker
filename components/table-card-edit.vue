@@ -5,9 +5,8 @@
             <md-table-toolbar>
                 <h1 class="md-title">Edit currencies</h1>
 
-                <add-dial v-bind:dialTitle="dialTitle" v-bind:addButton="addButton"
-                          v-bind:closeModal="closeModal">
-                    <add-form v-on:setCurrencies="setCurrencies" v-bind:request="request"></add-form>
+                <add-dial :dialTitle="dialTitle" :addButton="addButton" :bus="bus">
+                    <add-form :request="request" :bus="bus"></add-form>
                 </add-dial>
 
             </md-table-toolbar>
@@ -31,7 +30,9 @@
                     </md-table-cell>
                 </template>
                 <md-table-cell md-label="Delete">
-                    <md-button v-on:click="deleteCurrency"><md-icon >delete</md-icon></md-button>
+                    <md-button v-on:click="deleteCurrency(item)">
+                        <md-icon>delete</md-icon>
+                    </md-button>
                 </md-table-cell>
             </md-table-row>
         </md-table>
@@ -44,7 +45,7 @@
 
     export default {
         components: {"add-dial": AddDial, "add-form": AddForm},
-        props: ['data', 'request'],
+        props: ['data', 'request', 'bus'],
         name: 'TableCard',
         data: () => ({
             currentSort: 'id',
@@ -52,16 +53,10 @@
             arr: [],
             dialTitle: "Add currency",
             addButton: "Add",
-            closeModal: true
         }),
         methods: {
-            deleteCurrency (item) {
-                console.log("yeah");
-                console.log(item);
-            },
-            setCurrencies(val) {
-                this.closeModal = !this.closeModal;
-                this.$emit('setCurrencies', val);
+            deleteCurrency(item) {
+                this.bus.$emit('deleteCurrency', item)
             },
             // round number
             roundNumber(num, scale) {
@@ -78,44 +73,32 @@
                     let k = +(j + "e-" + scale);
                     return k;
                 }
-            }
-            ,
+            },
             customSort(value) {
                 return value.sort((a, b) => {
                     const sortBy = this.currentSort;
-
                     if (this.currentSortOrder === 'desc') {
                         return a[sortBy].localeCompare(b[sortBy])
                     }
-
                     return b[sortBy].localeCompare(a[sortBy])
                 })
-            }
-            ,
-            console(inf) {
-                console.log(inf);
-            }
-        }
-        ,
+            },
+        },
         watch: {
             data: function (val) {
                 this.arr = JSON.parse(JSON.stringify(this.data));
-
                 // make sense if number of rows is >=2
                 if (this.arr.length > 1) {
                     //this.customSort(this.arr);
                     return this.arr.sort((a, b) => {
                         let sortBy = this.currentSort;
-
                         if (this.currentSortOrder === 'desc') {
                             return a[sortBy].localeCompare(b[sortBy])
                         }
-
                         return b[sortBy].localeCompare(a[sortBy])
                     })
                 }
-            }
-            ,
+            },
         }
     }
 </script>

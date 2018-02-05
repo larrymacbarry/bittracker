@@ -1,6 +1,6 @@
 <template>
     <div>
-            <md-bottom-bar md-type="shift" class="md-accent">
+            <md-bottom-bar md-type="shift">
                 <router-link to="/"><md-bottom-bar-item id="bottom-bar-item-home" md-label="View" md-icon="home"></md-bottom-bar-item></router-link>
                 <router-link to="/edit"><md-bottom-bar-item id="bottom-bar-item-pages" md-label="Edit" md-icon="edit"></md-bottom-bar-item></router-link>
             </md-bottom-bar>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-view v-bind:data="data" v-bind:request="request" v-on:setCurrencies="setCurrencies"></router-view>
+        <router-view :bus="bus" v-bind:data="data" v-bind:request="request"></router-view>
 
         <bottom-menu></bottom-menu>
 
@@ -18,12 +18,8 @@
         components: {
             "table-card": TableCard, "bottom-menu": BottomMenu
         },
-        props: ['data', 'request'],
+        props: ['data', 'request', 'bus'],
         methods: {
-            setCurrencies(val) {
-                this.closeModal = !this.closeModal;
-                this.$emit('setCurrencies', val);
-            }
         }
 
     }

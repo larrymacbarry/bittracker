@@ -10,6 +10,12 @@ export default [
         props: true,
     },
     {
+        path: "/edit",
+        component: Home,
+        name: "Home",
+        props: true,
+    },
+    {
         path: "/settings",
         component: Settings,
         name: "Settings"
