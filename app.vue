@@ -1,14 +1,13 @@
 <template>
     <div class="page-container md-layout-column">
-        <md-toolbar class="md-primary" v-on:changeTheme="changeTheme" :md-theme="themeColor">
+        <md-toolbar class="md-primary" v-on:changeTheme="changeTheme" :md-theme="theme">
             <md-button class="md-icon-button" @click="showNavigation = true">
                 <md-icon>menu</md-icon>
             </md-button>
             <span class="md-title">{{pageTitle}}</span>
-
         </md-toolbar>
 
-        <md-drawer :md-active.sync="showNavigation" :md-theme="themeColor">
+        <md-drawer :md-active.sync="showNavigation" :md-theme="theme">
             <md-toolbar class="md-transparent" md-elevation="0">
                 <span class="md-title">Menu</span>
             </md-toolbar>
@@ -37,10 +36,15 @@
             </md-list>
         </md-drawer>
 
-        <md-content class="md-layout-item page-container" :md-theme="themeColor">
-
-            <router-view :bus="bus" :request="request" :data="data" @changeTheme="changeTheme"></router-view>
-
+        <md-content class="md-layout-item page-container" :md-theme="theme">
+            <router-view
+                    :bus="bus"
+                    :request="request"
+                    :data="data"
+                    :theme="theme"
+                    :market="market"
+                    @changeTheme="changeTheme"
+            ></router-view>
         </md-content>
 
         <slot></slot>
@@ -48,8 +52,8 @@
 </template>
 
 <script>
-    let themeColor = '';
-    if (localStorage.getItem("theme")) themeColor = localStorage.getItem("theme");
+    var theme = '';
+    if (localStorage.getItem("theme")) theme = localStorage.getItem("theme");
 
     export default {
         name: 'App',
@@ -57,14 +61,14 @@
             menuVisible: false,
             showNavigation: false,
             showSidepanel: false,
-            themeColor: themeColor,
+            theme: theme,
         }),
         methods: {
             toggleMenu() {
                 this.menuVisible = !this.menuVisible;
             },
             changeTheme(val) {
-                this.themeColor = val;
+                this.theme = val;
             }
         },
         computed: {
@@ -72,6 +76,6 @@
                 return this.$route.name
             }
         },
-        props: ['data', 'request', 'bus'],
+        props: ['data', 'request', 'bus', 'market'],
     }
 </script>

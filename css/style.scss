@@ -35,12 +35,6 @@
         accent: md-get-palette-color(grey, 100) // The accent or secondary color
 ))
 
-//@include md-register-theme("white", (
-//        primary: md-get-palette-color(white, 400), // The primary color of your application
-//        accent: md-get-palette-color(grey, 100) // The accent or secondary color
-//))
-
-
 @import "~vue-material/dist/theme/all"; // Apply the theme
 
 body {

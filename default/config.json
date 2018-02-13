@@ -5,10 +5,12 @@
       "sCurrency": "USD"
     }
   ],
+  "market": "CCCAGG",
   "coins": [
     "BTC",
     "ETH",
     "ETC",
+    "XRP",
     "LTC",
     "DASH",
     "XMR",

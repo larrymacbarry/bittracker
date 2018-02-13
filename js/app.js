@@ -4,12 +4,11 @@ import VueRouter from 'vue-router';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import defaultData from '.././default/config.json';
+import cccStreamer from '.././js/ccc-streamer-utilities'
 
 //main template
 import App from '.././app.vue';
-
 import Alert from '.././components/alert.vue';
-
 import routes from '.././routes/routes';
 
 const router = new VueRouter({routes});
@@ -17,13 +16,8 @@ const router = new VueRouter({routes});
 Vue.use(VueMaterial);
 Vue.use(VueRouter);
 
-let data = [],
-    request = defaultData.request,
-    storedReq = JSON.parse(localStorage.getItem("request"));
-
-if (storedReq) {
-    request = JSON.parse(localStorage.getItem("request"));
-}
+let socket = io.connect('https://streamer.cryptocompare.com/');
+//Use SubscriptionId 0 for TRADE, 2 for CURRENT and 5 for CURRENTAGG
 
 // event bus
 const bus = new Vue();
@@ -32,11 +26,14 @@ let vm = new Vue({
     router: router,
     el: '#app',
     components: {App, Alert},
-    template: '<App :data="data" :request="request" :bus="bus"><alert :bus="bus"></alert></App>',
+    template: '<App :data="data" :request="request" :bus="bus" :market="market"><alert :bus="bus"></alert></App>',
     data: {
-        data: data,
-        request: request,
-        bus: bus
+        data: [],
+        request: "",
+        bus: bus,
+        market: "",
+        storedReq: "",
+        storedMarket: ""
     },
     methods: {
         toInteger: function (val) {
@@ -44,11 +41,77 @@ let vm = new Vue({
         },
     },
     created: function () {
+        this.data = [];
+        this.storedReq = JSON.parse(localStorage.getItem("request"));
+        this.request = (this.storedReq) ? this.storedReq : defaultData.request;
+        this.storedMarket = localStorage.getItem("market");
+        this.market = (this.storedMarket) ? this.storedMarket : defaultData.market;
         // saving context
         let that = this;
 
+        document.addEventListener('DOMContentLoaded', function () {
+            let subscription = [];
+
+            that.request.forEach(function (v) {
+                subscription = ['5~' + that.market + '~' + v.fCurrency + '~' + v.sCurrency];
+                socket.emit('SubAdd', {subs: subscription});
+            });
+
+            socket.on("m", function (message) {
+                let messageType = message.substring(0, message.indexOf("~"));
+                let res = {};
+                if (messageType == CCC.STATIC.TYPE.CURRENTAGG) {
+                    res = CCC.CURRENT.unpack(message);
+                    dataUnpack(res);
+                }
+            });
+
+            let dataUnpack = function (d) {
+                let from = d['FROMSYMBOL'],
+                    to = d['TOSYMBOL'];
+
+                let item = {
+                    fCurrency: from,
+                    sCurrency: to,
+                    value: d['PRICE'],
+                    open: d['OPEN24HOUR'],
+                    change: parseInt(d['PRICE']) - parseInt(d['OPEN24HOUR']),
+                };
+
+                if (that.data.length > 0) {
+                    let currencyPushed = false;
+                    that.data.forEach(function (v, i) {
+                        if (item.fCurrency == that.data[i].fCurrency
+                            && item.sCurrency == that.data[i].sCurrency) {
+
+                            for (let key in that.data[i]) {
+                                if (item[key]) that.data[i][key] = item[key];
+                            }
+                            Vue.set(vm.data, i, that.data[i]);
+                            currencyPushed = true;
+                        }
+                    });
+                    if (!currencyPushed) that.data.push(item);
+                } else {
+                    that.data.push(item);
+                }
+                localStorage.setItem('data', JSON.stringify(that.data));
+            }
+        });
+
+        // get
+        window.addEventListener('offline', () => {
+            this.data = JSON.parse(localStorage.getItem('data'));
+        });
+
+        // market change event handler
+        this.bus.$on('changeMarket', (market) => {
+            that.market = market
+        });
+
         // add new currency event handler
         this.bus.$on('addCurrency', (item) => {
+            let subscription = [];
             let alreadyExist = false;
             that.request.forEach((el, i) => {
                 if (el.fCurrency == item.fCurrency && el.sCurrency == item.sCurrency) {
@@ -57,8 +120,15 @@ let vm = new Vue({
             });
 
             if (!alreadyExist) {
-                this.request.unshift(item);
+
+                that.request.unshift(item);
                 localStorage.setItem("request", JSON.stringify(this.request)); // setting up currencies we want to show
+
+                that.request.forEach(function (v, i) {
+                    subscription.push('5~' + that.market + '~' + v.fCurrency + '~' + v.sCurrency)
+                });
+
+                socket.emit('SubAdd', {subs: subscription});
             }
             else {
                 this.bus.$emit('showAlert');
@@ -68,68 +138,27 @@ let vm = new Vue({
         // delete currency event handler
         this.bus.$on('deleteCurrency', (item) => {
             let index = '';
+            let subscription = [];
 
-            this.request.forEach((el, i) => {
+            that.request.forEach((el, i) => {
                 if (el.fCurrency == item.fCurrency && el.sCurrency == item.sCurrency) {
-                    console.log(true);
                     index = i;
-                    this.request.splice(i, 1);
+                    that.request.splice(i, 1);
                 }
-                this.request = this.request.filter(value => Object.keys(value).length !== 0);
+                that.request = this.request.filter(value => Object.keys(value).length !== 0);
             });
-            this.data = [];
+            that.data = [];
             localStorage.setItem("request", JSON.stringify(this.request)); // setting up currencies we want to show
-        });
 
-        setInterval(() => {
-            this.data = this.data.filter(value => Object.keys(value).length !== 0);
-            this.request.forEach((c, i) => {
-                compareCurrencies(c.fCurrency, c.sCurrency)
-                    .then(
-                        (response) => {
-                            let curData = {
-                                'id': i.toString(),
-                                'fCurrency': (c.fCurrency).toString(),
-                                'sCurrency': (c.sCurrency).toString(),
-                                'fSymbol': (JSON.parse(response)['DISPLAY'].FROMSYMBOL).toString(),
-                                'sSymbol': (JSON.parse(response)['DISPLAY'].TOSYMBOL).toString(),
-                                'value': (JSON.parse(response)['RAW'].PRICE).toString(),
-                                'open': (JSON.parse(response)['RAW'].OPEN24HOUR).toString(),
-                                'change': (JSON.parse(response)['RAW'].CHANGE24HOUR).toString(),
-                                'volume': (JSON.parse(response)['RAW'].VOLUME24HOUR).toString(),
-                            };
-                            if (!this.data[i]) {
-                                this.data.push(curData);
-                            } else {
-                                if (JSON.stringify(vm.data) !== JSON.stringify(curData)) {
-                                    Vue.set(vm.data, i, curData);
-                                }
-                            }
-                        },
-                        error => console.log(`Rejected: ${error}`)
-                    );
+            that.request.forEach(function (v, i) {
+                subscription.push('5~' + that.market + '~' + v.fCurrency + '~' + v.sCurrency)
             });
-        }, 500);
-    }
+
+            let subsDel = ['5~' + that.market + '~' + item.fCurrency + '~' + item.sCurrency];
+
+            socket.emit('SubRemove',  { subs: subsDel});
+            socket.emit('SubAdd', {subs: subscription});
+        });
+    },
 });
 
-
-function compareCurrencies(fC, sC) {
-    return new Promise(function (resolve, reject) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://min-api.cryptocompare.com/data/generateAvg?fsym=' + fC + '&tsym=' + sC + '&e=CCCAGG', true);
-        xhr.onload = function () {
-            if (this.status == 200) {
-                resolve(this.response);
-            } else {
-                let error = new Error(this.statusText);
-                error.code = this.status;
-                reject(error);
-            }
-        };
-        xhr.onerror = function () {
-            reject(new Error("Network Error"));
-        };
-        xhr.send();
-    });
-}
